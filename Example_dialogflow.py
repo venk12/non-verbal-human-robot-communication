@@ -32,4 +32,3 @@ def detect_intent_texts(project_id, session_id, texts, language_code):
         print("Fulfillment text: {}\n".format(response.query_result.fulfillment_text))
 
 
-detect_intent_texts("i-tech-eesd", 123456789, ["I like javascript"], "en-US")

@@ -132,6 +132,7 @@ def listen_print_loop(responses: object) -> str:
     """
     num_chars_printed = 0
     transcript = ""  # Initialize an empty string to store the transcription
+    transcript_list = []
 
     for response in responses:
         if not response.results:
@@ -155,14 +156,14 @@ def listen_print_loop(responses: object) -> str:
         overwrite_chars = " " * (num_chars_printed - len(new_transcript))
 
         if not result.is_final:
-            sys.stdout.write(new_transcript + overwrite_chars + "\r")
+            sys.stdout.write('not final: '+new_transcript + overwrite_chars + "\r")
             sys.stdout.flush()
 
             num_chars_printed = len(new_transcript)
 
         else:
-            print(new_transcript + overwrite_chars)
-
+            print('final: '+new_transcript + overwrite_chars)
+            transcript_list.append(new_transcript + overwrite_chars)
             # Exit recognition if any of the transcribed phrases could be
             # one of our keywords.
             if re.search(r"\b(exit|quit)\b", new_transcript, re.I):
@@ -174,7 +175,7 @@ def listen_print_loop(responses: object) -> str:
         # Append the new_transcript to the existing transcript
         transcript += new_transcript + " "
 
-    return transcript  # Return the complete transcript after all responses are processed
+    return transcript_list  # Return the complete transcript after all responses are processed
 
 # def listen_print_loop(responses: object) -> str:
 #     """Iterates through server responses and prints them.
@@ -266,7 +267,7 @@ def main() -> None:
         responses = client.streaming_recognize(streaming_config, requests)
 
         # Now, put the transcription responses to use.
-        listen_print_loop(responses)
+        print(listen_print_loop(responses))
 
 
 if __name__ == "__main__":
