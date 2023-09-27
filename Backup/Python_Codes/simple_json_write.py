@@ -9,8 +9,9 @@ dynamic_data = 1
 while True:
     # Create a JSON object
     data = {
-        "static": "Hello from Python",
-        "dynamic": dynamic_data
+        "static": "Hello from BRO",
+        "dynamic": dynamic_data,
+        # "eye_emotion":'happy'
     }
     
     print("Now sending this data to arduino:", str(data))
