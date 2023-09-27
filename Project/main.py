@@ -1,0 +1,142 @@
+import serial
+import time
+import random
+import pygame
+import re
+import sys
+
+import speech_recog as listen
+import detect_intent as detect
+
+# Initialize pygame
+pygame.init()
+pygame.mixer.init()
+
+# Define the serial port and baud rate (adjust the port as needed)
+ser = serial.Serial('COM3', 115200)  # Replace 'COMX' with your Arduino's serial port
+emotions = ["NEUTRAL", "ANGRY", "SAD", "HAPPY"]
+
+# map_emotion_to_sound = {
+#     "HAPPY": 'sound_1.wav',
+#     "NEUTRAL": 'sound_2.wav',
+#     "ANGRY": 'sound_3.wav',
+#     "SAD": 'sound_4.wav'
+# }
+
+map_intent_to_sound = {
+    "Default Welcome Intent": {
+      "Emotion":"HAPPY",
+      "Sound_1":"answer.wav",
+      "Sound_2":"Ja.mp3"
+    },
+    "Default Fallback Intent": {
+      "Emotion":"ANGRY",
+      "Sound_1":"ha.mp3",
+      "Sound_2":""
+    },
+    "Sleep": {
+      "Emotion":"NEUTRAL",
+      "Sound_1":"music-box-lullaby.wav",
+      "Sound_2":"male-sleep-breathe.wav"
+    },
+    "Wakeup": {
+      "Emotion":"SAD",
+      "Sound_1":"yawn.wav",
+      "Sound_2":"Ja.mp3"
+    },
+    "Nurse": {
+      "Emotion":"ANGRY",
+      "Sound_1":"ding-dong.wav",
+      "Sound_2":""
+    }
+}
+
+def generate_random_servo_pos():
+    servoPos = [random.randint(80, 90), random.randint(80, 90)]
+    return servoPos
+
+def update_emotions(emotions):
+    while True:
+        random_emotion = random.choice(emotions)
+        yield random_emotion
+
+def sendData(intent):
+    print("Sending data to arduino...")
+    servo_pos = generate_random_servo_pos()
+    # emotion_generator = update_emotions(emotions)
+
+    emotion = map_intent_to_sound[intent]['Emotion']
+    print("Emotion detected:",emotion)
+    
+    data =  str(servo_pos[0]) + "," + str(servo_pos[1]) + "," + emotion+ ","
+    print("data :", data.encode())
+    ser.write(data.encode())
+
+    # print("Now playing the corresponding sound for...:", emotion)
+    
+    audio_file = './audio/'+ map_intent_to_sound[intent]['Sound_1']
+    pygame.mixer.music.load(audio_file)
+    pygame.mixer.music.play()
+
+    while pygame.mixer.music.get_busy():
+        pygame.time.Clock().tick(10)
+
+        # Clean up pygame
+        # pygame.mixer.quit()
+        # pygame.quit()
+
+def receiveData():
+    # Receive data from the Arduino. The Arduino sends back what it received.
+    read = ""
+    while ser.in_waiting > 0:
+        incomingData = ser.read().decode()  # Read one byte and decode it as a string
+        if incomingData != '\n':
+            read += incomingData
+    
+    if len(read) > 0:
+        print(read)
+        # You can add your own code here to process the received data if needed
+
+# Example usage:
+try:
+    while True:
+        # listen_and_transcribe()
+        
+        print("Now listening to you speak....")
+        content = listen.main()
+        print("Detecting intent for text: ", str(content[-1]))
+        
+        # Logic to break the loop once 'exit' or 'quit' is uttered
+        # for c in content:
+        #     if re.search(r"\b(exit|quit)\b", c, re.I):
+        #         print("Exiting the program..")
+        #         break
+
+        detected_intent = detect.detect_intent_texts([str(content[-1])])
+        print('Intent Detected:', detected_intent)
+
+        if(detected_intent==''):
+            print("No intent detected! Please try again")
+            break;
+        
+        sendData(detected_intent)
+        receiveData()
+        # break;
+
+except KeyboardInterrupt:
+    print("Ctrl+C pressed. Cleaning up resources...")
+    # Reinitialize audio resources if needed
+    # audio_interface = pyaudio.PyAudio()
+    # stream = audio_interface.open(
+    #     format=pyaudio.paInt16,
+    #     channels=1,
+    #     rate=RATE,
+    #     input=True,
+    #     frames_per_buffer=CHUNK,
+    #     stream_callback=_fill_buffer,
+    # )
+    
+    sys.exit(0)
+
+      # Call sendData() to send data to the Arduino
+    # time.sleep(5)  # Call receiveData() to receive data from the Arduino
