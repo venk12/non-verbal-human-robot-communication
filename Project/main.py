@@ -16,12 +16,6 @@ pygame.mixer.init()
 ser = serial.Serial('COM3', 115200)  # Replace 'COMX' with your Arduino's serial port
 emotions = ["NEUTRAL", "ANGRY", "SAD", "HAPPY"]
 
-# map_emotion_to_sound = {
-#     "HAPPY": 'sound_1.wav',
-#     "NEUTRAL": 'sound_2.wav',
-#     "ANGRY": 'sound_3.wav',
-#     "SAD": 'sound_4.wav'
-# }
 
 map_intent_to_sound = {
     "Default Welcome Intent": {
@@ -31,7 +25,7 @@ map_intent_to_sound = {
     },
     "Default Fallback Intent": {
       "Emotion":"ANGRY",
-      "Sound_1":"ha.mp3",
+      "Sound_1":"what.mp3",
       "Sound_2":""
     },
     "Sleep": {
