@@ -16,7 +16,6 @@ pygame.mixer.init()
 ser = serial.Serial('COM3', 115200)  # Replace 'COMX' with your Arduino's serial port
 emotions = ["NEUTRAL", "ANGRY", "SAD", "HAPPY"]
 
-
 map_intent_to_sound = {
     "Default Welcome Intent": {
       "Emotion":"HAPPY",
@@ -26,6 +25,11 @@ map_intent_to_sound = {
     "Default Fallback Intent": {
       "Emotion":"QUESTION",
       "Sound_1":"what.mp3",
+      "Sound_2":""
+    },
+    "Move the bed": {
+      "Emotion": "CONFIRMATION",
+      "Sound_1":"okay.mp3",
       "Sound_2":""
     },
     "Sleep": {
@@ -46,7 +50,7 @@ map_intent_to_sound = {
 }
 
 def generate_random_servo_pos():
-    servoPos = [random.randint(80, 90), random.randint(80, 90)]
+    servoPos = [random.randint(50, 90), random.randint(50, 90)]
     return servoPos
 
 def update_emotions(emotions):
@@ -58,6 +62,7 @@ def sendData(intent):
     print("Sending data to arduino...")
     servo_pos = generate_random_servo_pos()
     # emotion_generator = update_emotions(emotions)
+    # emotion = next(emotion_generator)
 
     emotion = map_intent_to_sound[intent]['Emotion']
     print("Emotion detected:",emotion)
@@ -67,17 +72,13 @@ def sendData(intent):
     ser.write(data.encode())
 
     # print("Now playing the corresponding sound for...:", emotion)
-    
+
     audio_file = './audio/'+ map_intent_to_sound[intent]['Sound_1']
     pygame.mixer.music.load(audio_file)
     pygame.mixer.music.play()
 
     while pygame.mixer.music.get_busy():
         pygame.time.Clock().tick(10)
-
-        # Clean up pygame
-        # pygame.mixer.quit()
-        # pygame.quit()
 
 def receiveData():
     # Receive data from the Arduino. The Arduino sends back what it received.
@@ -109,9 +110,13 @@ try:
         detected_intent = detect.detect_intent_texts([str(content[-1])])
         print('Intent Detected:', detected_intent)
 
+        if(detected_intent=='Move the bed'):
+            print("Move the bed intent detected! ")
+            # break;
+
         if(detected_intent==''):
-            print("No intent detected! Please try again")
-            break;
+            print("No intent detected! Please try again.. ")
+            # break;
         
         sendData(detected_intent)
         receiveData()
@@ -119,6 +124,8 @@ try:
 
 except KeyboardInterrupt:
     print("Ctrl+C pressed. Cleaning up resources...")
+    pygame.mixer.quit()
+    pygame.quit()
     # Reinitialize audio resources if needed
     # audio_interface = pyaudio.PyAudio()
     # stream = audio_interface.open(

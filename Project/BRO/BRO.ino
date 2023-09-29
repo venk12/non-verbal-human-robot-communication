@@ -36,7 +36,7 @@ HUSKYLENS huskylens;
 HUSKYLENSResult face;
 bool face_detected = false;
 bool prev_touch_value = 0;
-enum Emotion {NEUTRAL, SUPRISED, HAPPY, ANGRY, SAD,UP};
+enum Emotion {NEUTRAL, SUPRISED, HAPPY, ANGRY, SAD, UP, NURSE, QUESTION};
 Emotion emotion = NEUTRAL;
 
 Servo servo1, servo2;
@@ -253,6 +253,7 @@ void run_emotions(){
       }
       break;
     case NURSE:
+      Serial.println(F("NuRSE triggered!"));
       if (millis() % 5000 < 150) display_eyes(nurse0, 125);
       else display_eyes(nurse1, 125);
 
@@ -456,6 +457,8 @@ void communication() {
         if (value == "ANGRY") emotion = ANGRY;
         if (value == "UP") emotion = UP;
         if (value == "SAD") emotion = SAD;
+        if (value == "QUESTION") emotion = QUESTION;
+        if (value == "NURSE") emotion = NURSE;
       }
       // If more values are needed, add other lines here, e.g. if (i == 3) ...
     }
