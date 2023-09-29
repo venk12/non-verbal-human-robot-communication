@@ -37,6 +37,11 @@ map_intent_to_sound = {
       "Sound_1":"music-box-lullaby.wav",
       "Sound_2":"male-sleep-breathe.wav"
     },
+    "Understood": {
+      "Emotion":"HAPPY",
+      "Sound_1":"understood.mp3",
+      "Sound_2":""
+    },
     "Wakeup": {
       "Emotion":"SAD",
       "Sound_1":"yawn.wav",
