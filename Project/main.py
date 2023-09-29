@@ -39,7 +39,7 @@ map_intent_to_sound = {
       "Sound_2":"Ja.mp3"
     },
     "Nurse": {
-      "Emotion":"ANGRY",
+      "Emotion":"NURSE",
       "Sound_1":"ding-dong.wav",
       "Sound_2":""
     }
