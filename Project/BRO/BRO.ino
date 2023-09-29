@@ -36,7 +36,7 @@ HUSKYLENS huskylens;
 HUSKYLENSResult face;
 bool face_detected = false;
 bool prev_touch_value = 0;
-enum Emotion {NEUTRAL, SUPRISED, HAPPY, ANGRY, SAD, UP, NURSE, QUESTION};
+enum Emotion {NEUTRAL, SUPRISED, HAPPY, ANGRY, SAD, UP, NURSE, QUESTION,CONFIRMATION};
 Emotion emotion = NEUTRAL;
 
 Servo servo1, servo2;
@@ -63,6 +63,17 @@ byte neutral[] = {
   B01110,
   B0000
 };
+
+byte confirmation[] = {
+B0000,
+B00001,
+B000010,
+B0000100,
+B010100,
+B01100,
+B0100
+};
+
 byte nurse0[] = {
 B0110,
 B01110,
@@ -81,6 +92,7 @@ B000000,
 B00000,
 B0000
 };
+
 byte question[] = {
 B0110,
 B01010,
@@ -90,6 +102,7 @@ B000000,
 B00100,
 B0000
 };
+
 byte up0[] = {
 B0110,
 B01110,
@@ -253,17 +266,21 @@ void run_emotions(){
       }
       break;
     case NURSE:
-      Serial.println(F("NuRSE triggered!"));
-      if (millis() % 5000 < 150) display_eyes(nurse0, 125);
-      else display_eyes(nurse1, 125);
+      if (millis() % 500 < 250) display_eyes(nurse1, 0);
+      else display_eyes(nurse0, 0);
 
       if (face_detected) {
         servo1_target = 90.0 + float(face.xCenter - 160) / 320.00 * -50.00;
         servo2_target = 90.0 + float(face.yCenter - 120) / 240.00 * 50.00;
       }
       break;
+    case CONFIRMATION:
+      display_eyes(confirmation, 80);
+      servo1_target = 90 + 10.0 * sin(millis() / 500.00);
+      servo2_target = 80 + 15.0 * cos(millis() / 400.00);
+      break;
     case UP:
-      if (millis() % 5000 < 150) display_eyes(up0, 125);
+      if (millis() % 5000 < 50) display_eyes(up0, 125);
       else if (millis() % 5000 < 300) display_eyes(up1, 125);
       else if (millis() % 5000 < 450) display_eyes(up2, 125);
       else display_eyes(up0, 125);
@@ -278,7 +295,7 @@ void run_emotions(){
       servo2_target = 80 + 15.0 * cos(millis() / 400.00);
       break;
     case QUESTION:
-      display_eyes(question, 80);
+      display_eyes(question, 150);
       servo1_target = 90 + 10.0 * sin(millis() / 500.00);
       servo2_target = 80 + 15.0 * cos(millis() / 400.00);
       break;

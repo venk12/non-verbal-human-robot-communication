@@ -39,13 +39,18 @@ map_intent_to_sound = {
     },
     "Understood": {
       "Emotion":"HAPPY",
-      "Sound_1":"understood.mp3",
+      "Sound_1":"ah ha.mp3",
       "Sound_2":""
     },
     "Wakeup": {
       "Emotion":"SAD",
       "Sound_1":"yawn.wav",
       "Sound_2":"Ja.mp3"
+    },
+    "Cleaning": {
+      "Emotion":"SUPRISED",
+      "Sound_1":"awww.mp3",
+      "Sound_2":""
     },
     "Nurse": {
       "Emotion":"NURSE",
@@ -97,34 +102,41 @@ def receiveData():
         print(read)
         # You can add your own code here to process the received data if needed
 
+i = 1
 # Example usage:
 try:
     while True:
         # listen_and_transcribe()
         
-        print("Now listening to you speak....")
-        content = listen.main()
-        print("Detecting intent for text: ", str(content[-1]))
-        
-        # Logic to break the loop once 'exit' or 'quit' is uttered
-        # for c in content:
-        #     if re.search(r"\b(exit|quit)\b", c, re.I):
-        #         print("Exiting the program..")
-        #         break
+        if(i == 1):
+            detected_intent = "Default Welcome Intent"
+          
+        elif(i != 1):
+          print("Now listening to you speak....")
+          content = listen.main()
+          print("Detecting intent for text: ", str(content[-1]))
+          detected_intent = detect.detect_intent_texts([str(content[-1])])
 
-        detected_intent = detect.detect_intent_texts([str(content[-1])])
-        print('Intent Detected:', detected_intent)
+          if(content == ""):
+              print("No transcription.. ")
+              detected_intent = "Default Fallback Intent"
 
-        if(detected_intent=='Move the bed'):
-            print("Move the bed intent detected! ")
-            # break;
-
-        if(detected_intent==''):
-            print("No intent detected! Please try again.. ")
-            # break;
+          elif(content != ""):
+            detected_intent = detect.detect_intent_texts([str(content[-1])])
+            print('Intent Detected:', detected_intent)
+            
+            if(detected_intent=='Move the bed'):
+              print("Move the bed intent detected! ")
+            
+            elif(detected_intent==''):
+              print("No Intent Detected..")
+              detected_intent = "Default Fallback Intent"
+              break
         
         sendData(detected_intent)
         receiveData()
+
+        i+=1
         # break;
 
 except KeyboardInterrupt:
