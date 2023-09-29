@@ -24,7 +24,7 @@ map_intent_to_sound = {
       "Sound_2":"Ja.mp3"
     },
     "Default Fallback Intent": {
-      "Emotion":"ANGRY",
+      "Emotion":"QUESTION",
       "Sound_1":"what.mp3",
       "Sound_2":""
     },
