@@ -1,0 +1,18 @@
+{
+    "Default Welcome Intent": {
+      "Sound_1":"answer.mp3",
+      "Sound_2":"yeah.mp3"
+    },
+    "Sleep": {
+      "Sound_1":"music-box-lullaby.wav",
+      "Sound_2":"male-sleep-breathe.wav"
+    },
+    "Wakeup": {
+      "Sound_1":"yawn.wav",
+      "Sound_2":"yeah.mp3"
+    },
+    "Nurse": {
+      "Sound_1":"ding-dong.wav",
+      "Sound_2":""
+    }
+}
