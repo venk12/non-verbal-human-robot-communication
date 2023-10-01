@@ -163,10 +163,13 @@ def listen_print_loop(responses: object) -> str:
 
         else:
             print('final: '+new_transcript + overwrite_chars)
+            
             transcript_list.append(new_transcript + overwrite_chars)
+            
             # Exit recognition if any of the transcribed phrases could be
             # one of our keywords.
-            if re.search(r"\b(exit|quit)\b", new_transcript, re.I):
+            if re.search(r"\b(exit|bro|quit)\b", new_transcript, re.I):
+
                 print("Exiting..")
                 break
 
