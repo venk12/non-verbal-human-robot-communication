@@ -4,7 +4,7 @@ import tkinter as tk
 import serial
 
 # Define the serial port
-ser = serial.Serial('COM5', 115200)  # Replace 'COMX' with your Arduino's COM port
+ser = serial.Serial('COM3', 115200)  # Replace 'COMX' with your Arduino's COM port
 
 def update_servo_positions():
     # Get servo positions from sliders and send to Arduino

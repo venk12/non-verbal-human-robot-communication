@@ -49,4 +49,9 @@ def detect_intent_texts(texts):
 
         print("\n")
 
-    return(response.query_result.intent.display_name)
+    # return(response.query_result.intent.display_name)
+    return({
+        "intent": response.query_result.intent.display_name,
+        "bed_part": "footrest",
+        "bed_degree": 70
+    })
