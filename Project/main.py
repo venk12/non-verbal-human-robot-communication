@@ -60,7 +60,11 @@ map_intent_to_sound = {
 }
 
 def generate_random_servo_pos():
-    servoPos = [random.randint(50, 90), random.randint(50, 90)]
+    
+    # Servo 1 position : 90 (flat + Incline) to 60 (footrest down) - Footrest
+    # Servo 2 positions: 90 (Flat) to 165 (Vertical) - Headrest
+
+    servoPos = [random.randint(60, 90), random.randint(90, 165)]
     return servoPos
 
 def update_emotions(emotions):
@@ -71,10 +75,10 @@ def update_emotions(emotions):
 def sendData(intent):
     print("Sending data to arduino...")
     servo_pos = generate_random_servo_pos()
-    # emotion_generator = update_emotions(emotions)
-    # emotion = next(emotion_generator)
+    emotion_generator = update_emotions(emotions)
+    emotion = next(emotion_generator)
 
-    emotion = map_intent_to_sound[intent]['Emotion']
+    # emotion = map_intent_to_sound[intent]['Emotion']
     print("Emotion detected:",emotion)
     
     data =  str(servo_pos[0]) + "," + str(servo_pos[1]) + "," + emotion+ ","
@@ -115,18 +119,27 @@ try:
           print("Now listening to you speak....")
           content = listen.main()
           print("Detecting intent for text: ", str(content[-1]))
-          detected_intent = detect.detect_intent_texts([str(content[-1])])
+          obj_dialogflow = detect.detect_intent_texts([str(content[-1])])
+
+          detected_intent  = obj_dialogflow['intent']
+          bed_part = obj_dialogflow['bed_part']
+          bed_degree = obj_dialogflow['bed_degree']
 
           if(content == ""):
               print("No transcription.. ")
               detected_intent = "Default Fallback Intent"
 
           elif(content != ""):
-            detected_intent = detect.detect_intent_texts([str(content[-1])])
+            obj_dialogflow = detect.detect_intent_texts([str(content[-1])])
+            detected_intent  = obj_dialogflow['intent']
+            bed_part = obj_dialogflow['bed_part']
+            bed_degree = obj_dialogflow['bed_degree']
+            
             print('Intent Detected:', detected_intent)
             
             if(detected_intent=='Move the bed'):
               print("Move the bed intent detected! ")
+              print("Move the ", bed_part," to degrees: ", bed_degree)  
             
             elif(detected_intent==''):
               print("No Intent Detected..")
