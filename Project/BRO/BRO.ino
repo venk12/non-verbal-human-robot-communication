@@ -17,14 +17,14 @@
 #include <SoftwareSerial.h>
 #include <MP3Player_KT403A.h>
 #include "HUSKYLENS.h"
-#include <Servo.h> 
+#include <Servo.h>
 
 // Then we define global constants
 #define LED_PIN       4
 #define NUMPIXELS    74
 #define TOUCH_PIN     A0
-#define SERVO_PIN_1   6
-#define SERVO_PIN_2   7
+#define SERVO_PIN_1   7
+#define SERVO_PIN_2   8
 
 // And the rest
 SoftwareSerial mp3(2, 3);                     // The MP3 module is connected on pins 2 and 3
@@ -38,6 +38,9 @@ bool face_detected = false;
 bool prev_touch_value = 0;
 enum Emotion {NEUTRAL, SUPRISED, HAPPY, ANGRY, SAD, UP, NURSE, QUESTION,CONFIRMATION};
 Emotion emotion = NEUTRAL;
+
+enum Color {RED, GREEN, BLUE, ORANGE};
+Color color = BLUE;
 
 Servo servo1, servo2;
 float servo1_pos = 90, servo2_pos = 90;
@@ -199,6 +202,7 @@ void setup() {
 
   // Initialize the leds
   pixels.begin();
+  pixels.show();
 
   // Serial communication
   Serial.begin(115200);
@@ -238,6 +242,7 @@ void loop() {
     husky_lens();
     touch_sensor();
     run_emotions();
+    // turn_on_right_LED();
   }
 
   // Every 10 milliseconds, update the huskylens and touch sensor
@@ -247,6 +252,28 @@ void loop() {
   }
 }
 
+void turn_on_right_LED(){
+  // colorWipe(pixels, pixels.Color(255, 0, 0), 50); // Red
+  // colorWipe(pixels, pixels.Color(0, 255, 0), 10); // Green
+  // colorWipe(pixels, pixels.Color(0, 0, 255), 10); // Blue
+  display_eyes(blink1, 125);
+}
+
+void colorWipe(Adafruit_NeoPixel &strip, uint32_t color, int wait) {
+  for (int i = 0; i < strip.numPixels(); i++) {
+    uint8_t r = (color >> 16) & 0xFF; // Extract red component
+    uint8_t g = (color >> 8) & 0xFF;  // Extract green component
+    uint8_t b = color & 0xFF;         // Extract blue component
+
+    r = (r * LED_BRIGHTNESS) / 255;   // Adjust red component brightness
+    g = (g * LED_BRIGHTNESS) / 255;   // Adjust green component brightness
+    b = (b * LED_BRIGHTNESS) / 255;   // Adjust blue component brightness
+
+    strip.setPixelColor(i, strip.Color(r, g, b));
+    strip.show();
+    delay(wait);
+  }
+}
 // --------------------------------------------------------------------------------- //
 // ---------------------------------- TOUCH SENSOR --------------------------------- //
 // --------------------------------------------------------------------------------- //
@@ -476,6 +503,10 @@ void communication() {
         if (value == "SAD") emotion = SAD;
         if (value == "QUESTION") emotion = QUESTION;
         if (value == "NURSE") emotion = NURSE;
+      }
+      if (i==3){
+        if (value == "footrest") color = RED;
+        if (value == "headrest") color = GREEN;
       }
       // If more values are needed, add other lines here, e.g. if (i == 3) ...
     }
