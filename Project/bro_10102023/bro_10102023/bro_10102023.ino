@@ -336,10 +336,10 @@ void communication() {
 
       if (i == 0) value1 = value.toInt();
       if (i == 1) value2 = value.toInt();
-      if (i == 2) value3 = value.toInt();
+      // if (i == 2) value3 = value.toInt();
     }
 
-    Serial.print('value1:'+ value1+ 'value2:'+ value2 + 'value3:'+ value3);
+    // Serial.print('value1:'+ value1+ 'value2:'+ value2 + 'value3:'+ value3);
 
     switch(value1){
       case 0:
@@ -347,10 +347,10 @@ void communication() {
           // pixels1.clear();
           break;
       case 1:
-          setHeadrest(value2, value3);
+          setHeadrest(value2);
           break;
       case 2:
-          setFootrest(value2, value3);
+          setFootrest(value2);
           break;
     }
   }
