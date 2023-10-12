@@ -121,16 +121,12 @@ void loop() {
 
   if(touch_value && voice_switch){
     voice_switch = false;
-    colorWipe(pixels2, pixels2.Color(0, 0, 0), 0, LED_BRIGHTNESS);
-    colorWipe(pixels1, pixels2.Color(0, 0, 0), 0, LED_BRIGHTNESS);
-    selectMovement(1);
+    selectMovement(1, pixels1.Color(0, 0, 0), pixels2.Color(0, 0, 0));
   }
 
   else if(touch_value && !voice_switch){
     voice_switch = true;
-    colorWipe(pixels2, pixels2.Color(0, 255, 255), 0, LED_BRIGHTNESS);
-    colorWipe(pixels1, pixels2.Color(0, 255, 255), 0, LED_BRIGHTNESS);
-    selectMovement(1);
+    selectMovement(1, pixels1.Color(255, 255, 255) , pixels2.Color(255, 255, 255));
   }
 
   if(voice_switch){
@@ -139,37 +135,7 @@ void loop() {
       communication();
     }
   }
-
-
-
-  
-  // fadeInLED(pixels1, 10);
-  // fadeOutLED(pixels1, 10);
-
-  // if (millis() - timer1 >= 20 && !voice_switch){
-  //     timer1 = millis();
-  // }
-
-  // Every 10 milliseconds, get the communication going
-  
 }
-
-// --------------------------------------------------------------------------------- //
-// ---------------------------------- LED Logic --------------------------------- //
-// --------------------------------------------------------------------------------- //
-
-// void fadeInLED(Adafruit_NeoPixel &strip, int delay_time){
-
-// }
-
-// void fadeOutLED(Adafruit_NeoPixel &strip, int delay_time){
-//   int LED_BRIGHTNESS = 255;
-//   for (int i = 255; i > 1 ;  i--){
-//     colorWipe(strip, strip.Color(255, 0, 0), 1, LED_BRIGHTNESS); // Red
-//     LED_BRIGHTNESS = LED_BRIGHTNESS-1;
-//     delay(delay_time);
-//   }
-// }
 
 void colorWipe(Adafruit_NeoPixel &strip, uint32_t color, int wait, int LED_BRIGHTNESS) {
   for (int i = 0; i < strip.numPixels(); i++) {
@@ -221,6 +187,7 @@ void moveServo(int position, int duration, double frequency, bool mirror, Servo 
 void setHeadrest(int endPos){
   int increment = 1;  // Increment step for smooth movement
   int delayTime = 15; // Delay time between steps (adjust as needed)
+  S_footrest.detach();
 
   if (S_headrest_angle < endPos) {
     for (int pos = S_headrest_angle; pos <= endPos; pos += increment) {
@@ -234,11 +201,13 @@ void setHeadrest(int endPos){
     }
   }
   S_headrest_angle = endPos;
+  S_footrest.attach(SERVO_PIN_2);
 }
 
 void setFootrest(int endPos){
   int increment = 1;  // Increment step for smooth movement
   int delayTime = 15; // Delay time between steps (adjust as needed)
+  S_headrest.detach();
 
   if (S_footrest_angle < endPos) {
     for (int pos = S_footrest_angle; pos <= endPos; pos += increment) {
@@ -252,27 +221,56 @@ void setFootrest(int endPos){
     }
   }
   S_footrest_angle = endPos;
+  S_headrest.attach(SERVO_PIN_1);
 }
 
-// void convert_color(char color){
-//   switch(color){
-//     case 'red': return pixels1.Color(0, 255, 255)
-//   }
-// }
+uint32_t hexToRGB_P2(String hexColorString) {
+  // Remove the leading "0x" if it's present
+  if (hexColorString.startsWith("0x")) {
+    hexColorString = hexColorString.substring(2);
+  }
+  
+  // Convert the hex string to an unsigned long
+  unsigned long hexColor = strtoul(hexColorString.c_str(), NULL, 16);
+  
+  int red = (hexColor >> 16) & 0xFF;
+  int green = (hexColor >> 8) & 0xFF;
+  int blue = hexColor & 0xFF;
+  return pixels2.Color(red, green, blue);  
+}
 
-void selectMovement(int i){
+uint32_t hexToRGB_P1(String hexColorString) {
+  // Remove the leading "0x" if it's present
+  if (hexColorString.startsWith("0x")) {
+    hexColorString = hexColorString.substring(2);
+  }
+  
+  // Convert the hex string to an unsigned long
+  unsigned long hexColor = strtoul(hexColorString.c_str(), NULL, 16);
+  
+  int red = (hexColor >> 16) & 0xFF;
+  int green = (hexColor >> 8) & 0xFF;
+  int blue = hexColor & 0xFF;
+  return pixels1.Color(red, green, blue);  
+}
+
+void selectMovement(int i, uint32_t headrestpixel, uint32_t footrestpixel){
   switch (i) {
     case 0:
+      colorWipe(pixels1, headrestpixel, 0, LED_BRIGHTNESS); // Cyan
+      colorWipe(pixels2, footrestpixel, 0, LED_BRIGHTNESS); // Cyan
       break;
     case 1:
       //wake up bro
+      colorWipe(pixels1, headrestpixel, 0, LED_BRIGHTNESS); // Cyan
+      colorWipe(pixels2, footrestpixel, 0, LED_BRIGHTNESS); // Cyan
       moveServo(90, 200, 0.5, true, S_headrest);
       break;
-    case 2:
+    case 2: //waiting after showing 2 options (head and foot)
       S_headrest.detach();
       S_footrest.detach();
-      colorWipe(pixels1, pixels1.Color(0, 255, 255), 0, LED_BRIGHTNESS); // Cyan
-      colorWipe(pixels2, pixels2.Color(0, 255, 255), 0, LED_BRIGHTNESS); // Cyan
+      colorWipe(pixels1, headrestpixel, 0, LED_BRIGHTNESS); // Cyan
+      colorWipe(pixels2, footrestpixel, 0, LED_BRIGHTNESS); // Cyan
       delay(150);
       switchOffLED(pixels1);
       switchOffLED(pixels2);
@@ -282,13 +280,13 @@ void selectMovement(int i){
       break;
     case 3:
       //select headrest
-      colorWipe(pixels1, pixels1.Color(0, 255, 255), 0, LED_BRIGHTNESS); // Cyan
+      colorWipe(pixels1, headrestpixel, 0, LED_BRIGHTNESS); // Cyan
       moveServo(S_headrest_angle, 200, 1, false, S_headrest);
       switchOffLED(pixels1);
       break;
     case 4:
       //select footrest
-      colorWipe(pixels2, pixels2.Color(0, 255, 255), 0, LED_BRIGHTNESS); // Cyan
+      colorWipe(pixels2, footrestpixel, 0, LED_BRIGHTNESS); // Cyan
       moveServo(S_footrest_angle, 200, 1, false, S_footrest);
       switchOffLED(pixels2);
       break;
@@ -320,6 +318,7 @@ void communication() {
     pc_connected = true; // Once we get a message from the PC, we turn off the touch sensor and do everything with input from the PC
 
     int value1, value2;// val1 is method, val2 is inpout
+    String value3, value4;
 
     String value;
     for (int i = 0; data.length() > 0; i++){
@@ -328,29 +327,36 @@ void communication() {
 
       // The serial trigger is of the form '<x>,<y>'
       // where x is the variable to select the robot mode; possible values : [0,1,2]
-      // 0: Select Movement
+      // 0: SelectMovement
       // 1: Set headrest
       // 2: Set footrest
       // where y is the variable to pass to these functions
       // range of [1,2,3,4] for selectmovement and [0,180] for setting headrest/footrest positions
 
-      if (i == 0) value1 = value.toInt();
+      if (i == 0) value1 = value.toInt(); 
       if (i == 1) value2 = value.toInt();
-      // if (i == 2) value3 = value.toInt();
+      if (i == 2) value3 = String(value);
+      if (i == 3) value4 = String(value);
     }
 
     // Serial.print('value1:'+ value1+ 'value2:'+ value2 + 'value3:'+ value3);
 
     switch(value1){
       case 0:
-          selectMovement(value2);
+          selectMovement(value2, hexToRGB_P1(value3), hexToRGB_P2(value4));
           // pixels1.clear();
           break;
-      case 1:
+      case 1: //set headrest
+          switchOffLED(pixels2);
+          colorWipe(pixels1, hexToRGB_P1(value3), 0, LED_BRIGHTNESS);
           setHeadrest(value2);
+          switchOffLED(pixels1);
           break;
-      case 2:
+      case 2: //setfootrest
+          switchOffLED(pixels1);
+          colorWipe(pixels2, hexToRGB_P2(value4), 0, LED_BRIGHTNESS);
           setFootrest(value2);
+          switchOffLED(pixels2);
           break;
     }
   }
