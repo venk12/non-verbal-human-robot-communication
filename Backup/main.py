@@ -1,5 +1,6 @@
 from Example_STT import *
 from Example_dialogflow import *
+import ast
 
 def sst() -> str:
     """Transcribe speech from audio file."""
@@ -36,4 +37,7 @@ def sst() -> str:
 if __name__ == "__main__":
     sstoutput = sst()
     print(sstoutput)
-    detect_intent_texts("probable-summer-395414", 123456789, [sstoutput[-2]], "en-US")
+    intent = ast.literal_eval(detect_intent_texts("probable-summer-395414", 123456789, [sstoutput[-2]], "en-US"))
+    #intent = ast.literal_eval(detect_intent_texts("probable-summer-395414", 123456789, ['move the footrest up by 20 degrees'], "en-US"))
+    print(intent)
+    print(intent[0])
