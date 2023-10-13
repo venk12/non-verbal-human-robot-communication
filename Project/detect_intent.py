@@ -23,6 +23,13 @@ def detect_intent_texts(texts):
     session = session_client.session_path(project_id, session_id)
     print("Session path: {}\n".format(session))
 
+    response_obj = {
+        'intent':'',
+        'location':'',
+        'direction':[],
+        'degree':''
+    }
+
     for text in texts:
         text_input = dialogflow.TextInput(text=text, language_code=language_code)
 
@@ -46,12 +53,12 @@ def detect_intent_texts(texts):
             print("Detected Entities:")
             for entity_name, entity_value in response.query_result.parameters.items():
                 print("{}: {}".format(entity_name, entity_value))
+                response_obj[entity_name] = entity_value
+        
+        response_obj["intent"]= response.query_result.intent.display_name
 
         print("\n")
 
     # return(response.query_result.intent.display_name)
-    return({
-        "intent": response.query_result.intent.display_name,
-        "bed_part": "footrest",
-        "bed_degree": 70
-    })
+    # print("Response Object:", response_obj)
+    return(response_obj)

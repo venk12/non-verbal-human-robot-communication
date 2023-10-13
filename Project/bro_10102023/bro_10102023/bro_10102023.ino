@@ -93,6 +93,7 @@ byte confirmation[] = {
   B1111
 };
 
+bool first_activation = false;
 
 void setup() {
   // put your setup code here, to run once:
@@ -132,8 +133,18 @@ void loop() {
   if(voice_switch){
     if (millis() - timer2 >= 10 && voice_switch){
       timer2 = millis();
+      if(!first_activation){
+        Serial.write("voice switch is on");
+        first_activation = true;
+      }
       communication();
     }
+  }
+
+  if(!voice_switch && first_activation){
+    Serial.write("voice switch is off");
+    first_activation = false;
+    voice_switch = false;
   }
 }
 
