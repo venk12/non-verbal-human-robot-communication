@@ -16,8 +16,13 @@
 #include <Adafruit_NeoPixel.h>
 #include <SoftwareSerial.h>
 #include <MP3Player_KT403A.h>
-#include "HUSKYLENS.h"
+// #include "HUSKYLENS.h"
 #include <Servo.h>
+
+// #include <Wire.h>
+// #include "rgb_lcd.h"
+
+// rgb_lcd lcd;
 
 // Then we define global constants
 #define LED_PIN_1     4
@@ -33,7 +38,7 @@
 Adafruit_NeoPixel pixels1(LED_COUNT_1, LED_PIN_1, NEO_GRB + NEO_KHZ800);
 Adafruit_NeoPixel pixels2(LED_COUNT_2, LED_PIN_2, NEO_GRB + NEO_KHZ800);
 
-int LED_BRIGHTNESS = 10;  // 0-255
+int LED_BRIGHTNESS = 20;  // 0-255
 
 bool prev_touch_value = 0;
 enum Emotion {NEUTRAL, HAPPY, SAD, CONFIRMATION};

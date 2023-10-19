@@ -115,36 +115,36 @@ try:
         if(i == 1):
             detected_intent = "Default Welcome Intent"
           
-        # elif(i != 1):
-        #   print("Now listening to you speak....")
-        #   content = listen.main()
-        #   print("Detecting intent for text: ", str(content[-1]))
-        #   obj_dialogflow = detect.detect_intent_texts([str(content[-1])])
+        elif(i != 1):
+          print("Now listening to you speak....")
+          content = listen.main()
+          print("Detecting intent for text: ", str(content[-1]))
+          obj_dialogflow = detect.detect_intent_texts([str(content[-1])])
 
-        #   detected_intent  = obj_dialogflow['intent']
-        #   bed_part = obj_dialogflow['bed_part']
-        #   bed_degree = obj_dialogflow['bed_degree']
+          detected_intent  = obj_dialogflow['intent']
+          bed_part = obj_dialogflow['bed_part']
+          bed_degree = obj_dialogflow['bed_degree']
 
-        #   if(content == ""):
-        #       print("No transcription.. ")
-        #       detected_intent = "Default Fallback Intent"
+          if(content == ""):
+              print("No transcription.. ")
+              detected_intent = "Default Fallback Intent"
 
-        #   elif(content != ""):
-        #     obj_dialogflow = detect.detect_intent_texts([str(content[-1])])
-        #     detected_intent  = obj_dialogflow['intent']
-        #     bed_part = obj_dialogflow['bed_part']
-        #     bed_degree = obj_dialogflow['bed_degree']
+          elif(content != ""):
+            obj_dialogflow = detect.detect_intent_texts([str(content[-1])])
+            detected_intent  = obj_dialogflow['intent']
+            bed_part = obj_dialogflow['bed_part']
+            bed_degree = obj_dialogflow['bed_degree']
             
-        #     print('Intent Detected:', detected_intent)
+            print('Intent Detected:', detected_intent)
             
-        #     if(detected_intent=='Move the bed'):
-        #       print("Move the bed intent detected! ")
-        #       print("Move the ", bed_part," to degrees: ", bed_degree)  
+            if(detected_intent=='Move the bed'):
+              print("Move the bed intent detected! ")
+              print("Move the ", bed_part," to degrees: ", bed_degree)  
             
-        #     elif(detected_intent==''):
-        #       print("No Intent Detected..")
-        #       detected_intent = "Default Fallback Intent"
-        #       break
+            elif(detected_intent==''):
+              print("No Intent Detected..")
+              detected_intent = "Default Fallback Intent"
+              break
         
         sendData(detected_intent)
         receiveData()

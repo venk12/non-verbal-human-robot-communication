@@ -29,6 +29,7 @@ def receiveData():
 #second color hex is for footrest
 def execute_wait():  #waiting after giving the headrest footrest selectionj
     data =  str(0) + "," + str(2) +"," + "0xFFFFFF," +"0xFFFFFF,"
+    
     for i in range(3):
         print("sending data :", data.encode())
         ser.write(data.encode())
