@@ -88,7 +88,7 @@ void loop() {
     if (millis() - timer2 >= 10 && voice_switch) {
       timer2 = millis();
       if (!first_activation) {
-        Serial.println("voice switch is on");
+        Serial.println("Start");
         first_activation = true;
       }
       communication();
