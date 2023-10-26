@@ -58,8 +58,8 @@ def execute_wait():  # waiting after giving the headrest footrest selection
 # first color hex is for headrest
 # second color hex is for footrest
 def select_headrest(headrest_angle):  # selecting the headrest, degree1, color1, color2
-    up = str(1) + "," + str(headrest_angle+10) + "," + '0xfa7000,' + '0xfa7000,'  # first is orange,
-    down = str(1) + "," + str(headrest_angle-10) + "," + '0x00ff00,' + '0x00ff00,'  # first is red
+    up = str(1) + "," + str(headrest_angle+10) + "," + '0xff0000,' + '0xff0000,'  # first is red, going up is dangerous
+    down = str(1) + "," + str(headrest_angle-10) + "," + '0x00ff00,' + '0x00ff00,'  # first is green, going down is relatively safer
 
     for i in range(2):
         print("sending data :", up.encode())
@@ -85,7 +85,7 @@ def select_headrest(headrest_angle):  # selecting the headrest, degree1, color1,
 # first color hex is for headrest
 # second color hex is for footrest
 def select_footrest(footrest_angle):  # selecting the footrest, degree1, color1, color2
-    up = str(2) + "," + str(footrest_angle+10) + "," + '0xfa7000,' + '0xfa7000,'
+    up = str(2) + "," + str(footrest_angle+10) + "," + '0xff0000,' + '0xff0000,'
     down = str(2) + "," + str(footrest_angle-10) + "," + '0x00ff00,' + '0x00ff00,'
 
     for i in range(2):
