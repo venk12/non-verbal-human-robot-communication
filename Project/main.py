@@ -26,7 +26,7 @@ def map_intent_to_sound(intent):
     if intent == 'footrest':
         return 'click_off.ogg'
     if intent == 'sleep':
-        return 'snore.mp3'
+        return 'sleep.mp3'
     if intent == 'turn_off':
         return 'bye.mp3'
     if intent == 'wait':
@@ -161,10 +161,7 @@ def hello():
     pygame.mixer.music.load(audio_file)
     pygame.mixer.music.play()
 
-def sleep():
-    audio_file = './new_audio_files/' + map_intent_to_sound('sleep')
-    pygame.mixer.music.load(audio_file)
-    pygame.mixer.music.play()
+
 
 def confusion():
     audio_file = './new_audio_files/' + map_intent_to_sound('confuse')
@@ -261,16 +258,6 @@ while True:
         hello()
         print(voice_switch, robot_state)
 
-    if (voice_switch == False and robot_state['status'] == "on_waiting"):
-        print("Now sleeping....")
-        sleep()
-        content = listen.main()
-        print("Detecting intent for text: ", str(content[-1]))
-        obj_dialogflow = detect.detect_intent_texts([str(content[-1])])
-        detected_intent = obj_dialogflow['intent']
-        if ("Default Welcome Intent" in detected_intent):
-            voice_switch = True
-            pygame.mixer.music.stop()
 
     if (voice_switch == True and robot_state['status'] == "on_waiting"):
         print("Now listening to you speak....")
@@ -381,6 +368,6 @@ while True:
                         set_footrest(robot_state['footrest_angle'])
                     print('move the footrest down now')
 
-        voice_switch = False
+
         robot_state['status'] = "on_waiting"
         break
