@@ -11,7 +11,7 @@ import threading
 pygame.init()
 pygame.mixer.init()
 
-ser = serial.Serial('COM3', 115200)
+ser = serial.Serial('COM8', 115200)
 
 import re
 
@@ -19,11 +19,19 @@ substring_mapping = {
         "address": "headrest",
         "head dress": "headrest",
         "head rest": "headrest",
+        "aheadrest": "headrest",
+        "hat rest": "footrest",
         "food rest": "footrest",
         "foot rest": "footrest",
         "hatch rest": "headrest",
         "had to rest": "headrest",
         "food restaurant": "footrest",
+        "remove": "move",
+        "higher": "up",
+        "increase": "up",
+        "lower": "down",
+        "decrease": "down",
+        
         "foodrestaurant":"footrest"
         # Add more mappings as needed
     }
@@ -91,8 +99,8 @@ def execute_wait():  # waiting after giving the headrest footrest selection
 # first color hex is for headrest
 # second color hex is for footrest
 def select_headrest(headrest_angle):  # selecting the headrest, degree1, color1, color2
-    up = str(1) + "," + str(headrest_angle+10) + "," + '0xff0000,' + '0xff0000,'  # up is red,
-    down = str(1) + "," + str(headrest_angle-10) + "," + '0x00ff00,' + '0x00ff00,'  # down is green
+    up = str(1) + "," + str(headrest_angle+10) + "," + '0x0000ff,' + '0x0000ff,'  # up is blue,
+    down = str(1) + "," + str(headrest_angle-10) + "," + '0xffff00,' + '0xffff00,'  # down is yellow
 
     for i in range(2):
         audio_file = './new_audio_files/' + map_intent_to_sound('up_down')
@@ -105,14 +113,14 @@ def select_headrest(headrest_angle):  # selecting the headrest, degree1, color1,
         ser.write(down.encode())
         time.sleep(1)
 
-        execute_wait()
+        #execute_wait()
 
 
 # first color hex is for headrest
 # second color hex is for footrest
 def select_footrest(footrest_angle):  # selecting the footrest, degree1, color1, color2
-    up = str(2) + "," + str(footrest_angle+10) + "," + '0xff0000,' + '0xff0000,'# up is red,
-    down = str(2) + "," + str(footrest_angle-10) + "," + '0x00ff00,' + '0x00ff00,'# down is green
+    up = str(2) + "," + str(footrest_angle+10) + "," + '0x0000ff,' + '0x0000ff,'# up is blue,
+    down = str(2) + "," + str(footrest_angle-10) + "," + '0xffff00,' + '0xffff00,'# down is yellow
 
     for i in range(2):
         audio_file = './new_audio_files/' + map_intent_to_sound('up_down')
@@ -125,7 +133,7 @@ def select_footrest(footrest_angle):  # selecting the footrest, degree1, color1,
         ser.write(down.encode())
         time.sleep(1)
 
-        execute_wait()
+        #execute_wait()
 
 
 # def setColors():
@@ -283,7 +291,7 @@ while True:
         sleep()
         content = listen.main()
         content =  pattern.sub(replace_substrings, str(content[-1]))
-        print("Detecting intent for text: ", str(content[-1]))
+        print("Detecting intent for text: ", content)
         obj_dialogflow = detect.detect_intent_texts([content])
         detected_intent = obj_dialogflow['intent']
         if ("Default Welcome Intent" in detected_intent):
@@ -295,7 +303,7 @@ while True:
         print("Now listening to you speak....")
         content = listen.main()
         content =  pattern.sub(replace_substrings, str(content[-1]))
-        print("Detecting intent for text: ", str(content[-1]))
+        print("Detecting intent for text: ", content)
         obj_dialogflow = detect.detect_intent_texts([content])
         detected_intent = obj_dialogflow['intent']
         if ("Move the bed" in detected_intent):
