@@ -11,7 +11,7 @@ import threading
 pygame.init()
 pygame.mixer.init()
 
-ser = serial.Serial('COM5', 115200)
+ser = serial.Serial('COM3', 115200)
 
 
 def map_intent_to_sound(intent):
