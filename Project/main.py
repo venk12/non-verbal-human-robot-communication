@@ -81,7 +81,7 @@ def select_headrest(headrest_angle):  # selecting the headrest, degree1, color1,
 # first color hex is for headrest
 # second color hex is for footrest
 def select_footrest(footrest_angle):  # selecting the footrest, degree1, color1, color2
-    up = str(2) + "," + str(footrest_angle+10) + "," + '0xff0000,' + '0xff0000,'# up is blue,
+    up = str(2) + "," + str(footrest_angle+10) + "," + '0xff0000,' + '0xff0000,'# up is red,
     down = str(2) + "," + str(footrest_angle-10) + "," + '0x00ff00,' + '0x00ff00,'# down is green
 
     for i in range(2):
