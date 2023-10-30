@@ -13,6 +13,36 @@ pygame.mixer.init()
 
 ser = serial.Serial('COM3', 115200)
 
+import re
+
+substring_mapping = {
+        "address": "headrest",
+        "head dress": "headrest",
+        "head rest": "headrest",
+        "food rest": "footrest",
+        "foot rest": "footrest",
+        "hatch rest": "headrest",
+        "had to rest": "headrest",
+        "food restaurant": "footrest",
+        "foodrestaurant":"footrest"
+        # Add more mappings as needed
+    }
+
+
+# Use regular expressions to find and replace substrings
+pattern = re.compile("|".join(re.escape(key) for key in substring_mapping.keys()))
+
+# Function to replace substrings using regular expressions
+def replace_substrings(match):
+    # Get the matched substring
+    matched_substring = match.group(0)
+
+    # Define your mapping object as a dictionary where keys are substrings to find, and values are their replacements.
+
+    # Look up the matched substring in the mapping, or keep it as is
+    replacement = substring_mapping.get(matched_substring, matched_substring)
+
+    return replacement
 
 def map_intent_to_sound(intent):
     if intent == 'confirm':
@@ -252,8 +282,9 @@ while True:
         print("Now sleeping....")
         sleep()
         content = listen.main()
+        content =  pattern.sub(replace_substrings, str(content[-1]))
         print("Detecting intent for text: ", str(content[-1]))
-        obj_dialogflow = detect.detect_intent_texts([str(content[-1])])
+        obj_dialogflow = detect.detect_intent_texts([content])
         detected_intent = obj_dialogflow['intent']
         if ("Default Welcome Intent" in detected_intent):
             voice_switch = True
@@ -263,8 +294,9 @@ while True:
         hello()
         print("Now listening to you speak....")
         content = listen.main()
+        content =  pattern.sub(replace_substrings, str(content[-1]))
         print("Detecting intent for text: ", str(content[-1]))
-        obj_dialogflow = detect.detect_intent_texts([str(content[-1])])
+        obj_dialogflow = detect.detect_intent_texts([content])
         detected_intent = obj_dialogflow['intent']
         if ("Move the bed" in detected_intent):
             detected_location = obj_dialogflow['location']
@@ -286,7 +318,8 @@ while True:
         execute_selection()
         print("Now listening to you speak....")
         content = listen.main()
-        obj_dialogflow = detect.detect_intent_texts([str(content[-1])])
+        content =  pattern.sub(replace_substrings, str(content[-1]))
+        obj_dialogflow = detect.detect_intent_texts([content])
         detected_intent = obj_dialogflow['intent']
         if ("Move the bed" not in detected_intent):
             confusion()
@@ -306,7 +339,8 @@ while True:
                 select_headrest(robot_state['headrest_angle'])
                 execute_wait()
                 content = listen.main()
-                obj_dialogflow = detect.detect_intent_texts([str(content[-1])])
+                content =  pattern.sub(replace_substrings, str(content[-1]))
+                obj_dialogflow = detect.detect_intent_texts([content])
                 detected_intent = obj_dialogflow['intent']
                 if ("Move the bed" not in detected_intent):
                     confusion()
@@ -341,7 +375,8 @@ while True:
                 select_footrest(robot_state['footrest_angle'])
                 execute_wait()
                 content = listen.main()
-                obj_dialogflow = detect.detect_intent_texts([str(content[-1])])
+                content =  pattern.sub(replace_substrings, str(content[-1]))
+                obj_dialogflow = detect.detect_intent_texts([content])
                 detected_intent = obj_dialogflow['intent']
                 if ("Move the bed" not in detected_intent):
                     confusion()
