@@ -66,7 +66,7 @@ def map_intent_to_sound(intent):
     if intent == 'footrest':
         return 'click_off.ogg'
     if intent == 'sleep':
-        return 'snore.mp3'
+        return 'sleep.mp3'
     if intent == 'turn_off':
         return 'bye.mp3'
     if intent == 'wait':
@@ -100,7 +100,7 @@ def execute_wait():  # waiting after giving the headrest footrest selection
 # second color hex is for footrest
 def select_headrest(headrest_angle):  # selecting the headrest, degree1, color1, color2
     up = str(1) + "," + str(headrest_angle+10) + "," + '0x0000ff,' + '0x0000ff,'  # up is blue,
-    down = str(1) + "," + str(headrest_angle-10) + "," + '0xffff00,' + '0xffff00,'  # down is yellow
+    down = str(1) + "," + str(headrest_angle-10) + "," + '0xffa500,' + '0xffa500,'  # down is ornge
 
     for i in range(2):
         audio_file = './new_audio_files/' + map_intent_to_sound('up_down')
@@ -120,7 +120,7 @@ def select_headrest(headrest_angle):  # selecting the headrest, degree1, color1,
 # second color hex is for footrest
 def select_footrest(footrest_angle):  # selecting the footrest, degree1, color1, color2
     up = str(2) + "," + str(footrest_angle+10) + "," + '0x0000ff,' + '0x0000ff,'# up is blue,
-    down = str(2) + "," + str(footrest_angle-10) + "," + '0xffff00,' + '0xffff00,'# down is yellow
+    down = str(2) + "," + str(footrest_angle-10) + "," + '0xffa500,' + '0xffa500,'# down is orange
 
     for i in range(2):
         audio_file = './new_audio_files/' + map_intent_to_sound('up_down')
