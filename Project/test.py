@@ -13,6 +13,36 @@ pygame.init()
 pygame.mixer.init()
 
 ser = serial.Serial('COM3', 115200)
+import re
+
+substring_mapping = {
+        "address": "headrest",
+        "head dress": "headrest",
+        "head rest": "headrest",
+        "food rest": "footrest",
+        "foot rest": "footrest",
+        "hatch rest": "headrest",
+        "had to rest": "headrest",
+        "food restaurant": "footrest",
+        "foodrestaurant":"footrest"
+        # Add more mappings as needed
+    }
+
+
+# Use regular expressions to find and replace substrings
+pattern = re.compile("|".join(re.escape(key) for key in substring_mapping.keys()))
+
+# Function to replace substrings using regular expressions
+def replace_substrings(match):
+    # Get the matched substring
+    matched_substring = match.group(0)
+
+    # Define your mapping object as a dictionary where keys are substrings to find, and values are their replacements.
+
+    # Look up the matched substring in the mapping, or keep it as is
+    replacement = substring_mapping.get(matched_substring, matched_substring)
+
+    return replacement
 
 def map_intent_to_sound(intent):
     if intent == 'wake_up':
@@ -36,6 +66,28 @@ def map_intent_to_sound(intent):
 
 # data =  str(0) + "," + str(2) +","
 
+listen_result = None
+
+
+def run_listen():
+    global listen_result  # Declare the variable as global
+    listen_result = listen.main()
+
+def execute_wait():  # waiting after giving the headrest footrest selectionj
+    data = str(0) + "," + str(2) + "," + "0xFFFFFF," + "0xFFFFFF,"
+    for i in range(3):
+        print("sending data :", data.encode())
+
+        audio_file = './new_audio_files/'+ map_intent_to_sound('wait')
+        pygame.mixer.music.load(audio_file)
+        pygame.mixer.music.play()
+
+        ser.write(data.encode())
+        time.sleep(0.75)
+
+listen_thread = threading.Thread(target=run_listen)
+execute_wait_thread = threading.Thread(target=execute_wait)
+
 def receiveData():
     print("Receiving data from Arduino...")
     # Receive data from the Arduino. The Arduino sends back what it received.
@@ -51,17 +103,6 @@ def receiveData():
 
 # first color hex is for headrest
 # second color hex is for footrest
-def execute_wait():  # waiting after giving the headrest footrest selectionj
-    data = str(0) + "," + str(2) + "," + "0xFFFFFF," + "0xFFFFFF,"
-    for i in range(3):
-        print("sending data :", data.encode())
-
-        audio_file = './new_audio_files/'+ map_intent_to_sound('wait')
-        pygame.mixer.music.load(audio_file)
-        pygame.mixer.music.play()
-
-        ser.write(data.encode())
-        time.sleep(0.75)
 
 
 # first color hex is for headrest
@@ -246,7 +287,6 @@ while True:
 
     if (recv_message == "voice switch is on"):
         voice_switch = True
-
         robot_state['status'] = "on_waiting"
         recv_message = ""
         print(voice_switch,robot_state)
@@ -254,8 +294,12 @@ while True:
     if (voice_switch == True and robot_state['status'] == "on_waiting"):
         print("Now listening to you speak....")
         content = listen.main()
+        content =  pattern.sub(replace_substrings, str(content[-1]))
+
+        # listen_thread.start()
+        execute_wait_thread.start()
         print("Detecting intent for text: ", str(content[-1]))
-        obj_dialogflow = detect.detect_intent_texts([str(content[-1])])
+        obj_dialogflow = detect.detect_intent_texts([content])
         detected_intent = obj_dialogflow['intent']
         if ("Move the bed" in detected_intent):
             detected_location = obj_dialogflow['location']
@@ -273,7 +317,11 @@ while True:
         execute_selection()
         print("Now listening to you speak....")
         content = listen.main()
-        obj_dialogflow = detect.detect_intent_texts([str(content[-1])])
+        content =  pattern.sub(replace_substrings, str(content[-1]))
+        # Add checks so that the right trigger words are passed
+
+
+        obj_dialogflow = detect.detect_intent_texts([content])
         detected_intent = obj_dialogflow['intent']
         if ("Move the bed" not in detected_intent):
             print("No intent detected...looping again")
@@ -292,7 +340,8 @@ while True:
                 select_headrest()
                 execute_wait()
                 content = listen.main()
-                obj_dialogflow = detect.detect_intent_texts([str(content[-1])])
+                content =  pattern.sub(replace_substrings, str(content[-1]))
+                obj_dialogflow = detect.detect_intent_texts([content])
                 detected_intent = obj_dialogflow['intent']
                 if ("Move the bed" not in detected_intent):
                     print("No intent detected...looping again")
@@ -327,7 +376,8 @@ while True:
                 select_footrest()
                 execute_wait()
                 content = listen.main()
-                obj_dialogflow = detect.detect_intent_texts([str(content[-1])])
+                content =  pattern.sub(replace_substrings, str(content[-1]))
+                obj_dialogflow = detect.detect_intent_texts([content])
                 detected_intent = obj_dialogflow['intent']
                 if ("Move the bed" not in detected_intent):
                     print("No intent detected...looping again")
