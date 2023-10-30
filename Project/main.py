@@ -21,14 +21,16 @@ def map_intent_to_sound(intent):
         return 'move-up.mp3'
     if intent == 'move_down':
         return 'move-down.mp3'
+    if intent == 'up_down':
+        return 'up_down.mp3'
     if intent == 'headrest':
         return 'click_on.ogg'
     if intent == 'footrest':
         return 'click_off.ogg'
     if intent == 'sleep':
-        return 'sleep.mp3'
+        return 'snore.mp3'
     if intent == 'turn_off':
-        return 'turn_off.wav'
+        return 'bye.mp3'
     if intent == 'wait':
         return 'wait.mp3'
     if intent == 'confuse':
@@ -43,7 +45,8 @@ def map_intent_to_sound(intent):
 # first color hex is for headrest
 # second color hex is for footrest
 def execute_wait():  # waiting after giving the headrest footrest selection
-    data = str(0) + "," + str(2) + "," + "0xFFBF00," + "0xFFBF00,"
+    data = str(0) + "," + str(2) + "," + "0xFFBF00," + "0xFFBF00," #Yellow
+
     for i in range(3):
         print("sending data :", data.encode())
 
@@ -58,24 +61,17 @@ def execute_wait():  # waiting after giving the headrest footrest selection
 # first color hex is for headrest
 # second color hex is for footrest
 def select_headrest(headrest_angle):  # selecting the headrest, degree1, color1, color2
-    up = str(1) + "," + str(headrest_angle+10) + "," + '0xff0000,' + '0xff0000,'  # first is red, going up is dangerous
-    down = str(1) + "," + str(headrest_angle-10) + "," + '0x00ff00,' + '0x00ff00,'  # first is green, going down is relatively safer
+    up = str(1) + "," + str(headrest_angle+10) + "," + '0xff0000,' + '0xff0000,'  # up is red,
+    down = str(1) + "," + str(headrest_angle-10) + "," + '0x00ff00,' + '0x00ff00,'  # down is green
 
     for i in range(2):
+        audio_file = './new_audio_files/' + map_intent_to_sound('up_down')
+        pygame.mixer.music.load(audio_file)
+        pygame.mixer.music.play()
         print("sending data :", up.encode())
-
-        audio_file = './new_audio_files/' + map_intent_to_sound('move_up')
-        pygame.mixer.music.load(audio_file)
-        pygame.mixer.music.play()
-
         ser.write(up.encode())
-        time.sleep(0.5)
+        time.sleep(1)
         print("sending data :", down.encode())
-
-        audio_file = './new_audio_files/' + map_intent_to_sound('move_down')
-        pygame.mixer.music.load(audio_file)
-        pygame.mixer.music.play()
-
         ser.write(down.encode())
         time.sleep(1)
 
@@ -85,24 +81,17 @@ def select_headrest(headrest_angle):  # selecting the headrest, degree1, color1,
 # first color hex is for headrest
 # second color hex is for footrest
 def select_footrest(footrest_angle):  # selecting the footrest, degree1, color1, color2
-    up = str(2) + "," + str(footrest_angle+10) + "," + '0xff0000,' + '0xff0000,'
-    down = str(2) + "," + str(footrest_angle-10) + "," + '0x00ff00,' + '0x00ff00,'
+    up = str(2) + "," + str(footrest_angle+10) + "," + '0xff0000,' + '0xff0000,'# up is red,
+    down = str(2) + "," + str(footrest_angle-10) + "," + '0x00ff00,' + '0x00ff00,'# down is green
 
     for i in range(2):
+        audio_file = './new_audio_files/' + map_intent_to_sound('up_down')
+        pygame.mixer.music.load(audio_file)
+        pygame.mixer.music.play()
         print("sending data :", up.encode())
-
-        audio_file = './new_audio_files/' + map_intent_to_sound('move_up')
-        pygame.mixer.music.load(audio_file)
-        pygame.mixer.music.play()
-
         ser.write(up.encode())
-        time.sleep(0.5)
+        time.sleep(1)
         print("sending data :", down.encode())
-
-        audio_file = './new_audio_files/' + map_intent_to_sound('move_down')
-        pygame.mixer.music.load(audio_file)
-        pygame.mixer.music.play()
-
         ser.write(down.encode())
         time.sleep(1)
 
@@ -119,7 +108,7 @@ def select_footrest(footrest_angle):  # selecting the footrest, degree1, color1,
 # second color hex is for footrest
 def execute_selection():  # smaking the selection of headrest and footrest, color1, color2
     for i in range(2):
-        data = str(0) + "," + str(3) + "," + "0x00ffff," + "0x00ffff,"
+        data = str(0) + "," + str(3) + "," + "0x00ffff," + "0x00ffff," #headrest blue
         print("sending data :", data.encode())
 
         audio_file = './new_audio_files/' + map_intent_to_sound('headrest')
@@ -130,7 +119,7 @@ def execute_selection():  # smaking the selection of headrest and footrest, colo
         time.sleep(0.75)
 
     for i in range(2):
-        data = str(0) + "," + str(4) + "," + "0x00ffff," + "0x00ffff,"
+        data = str(0) + "," + str(4) + "," + "0x00ffff," + "0x00ffff," #footrest blue
         print("sending data :", data.encode())
 
         audio_file = './new_audio_files/' + map_intent_to_sound('footrest')
@@ -147,7 +136,7 @@ def confirmation():
     audio_file = './new_audio_files/' + map_intent_to_sound('confirm')
     pygame.mixer.music.load(audio_file)
 
-    data = str(0) + "," + str(2) + "," + "0x0DAC16," + "0x0DAC16,"
+    data = str(0) + "," + str(2) + "," + "0x0DAC16," + "0x0DAC16," #green
     for i in range(2):
         print("sending data :", data.encode())
 
@@ -160,12 +149,15 @@ def hello():
     pygame.mixer.music.load(audio_file)
     pygame.mixer.music.play()
 
-
+def sleep():
+    audio_file = './new_audio_files/' + map_intent_to_sound('sleep')
+    pygame.mixer.music.load(audio_file)
+    pygame.mixer.music.play()
 
 def confusion():
     audio_file = './new_audio_files/' + map_intent_to_sound('confuse')
     pygame.mixer.music.load(audio_file)
-    data = str(0) + "," + str(2) + "," + "0x7e28d4," + "0x7e28d4,"
+    data = str(0) + "," + str(2) + "," + "0x7e28d4," + "0x7e28d4," #purple
     print("sending data :", data.encode())
     pygame.mixer.music.play()
     ser.write(data.encode())
@@ -179,7 +171,7 @@ def set_footrest(i):  # selecting the footrest, degree1, color1, color2
     if i<90:
         audio_file = './new_audio_files/' + map_intent_to_sound('move_down')
     pygame.mixer.music.load(audio_file)
-    data = str(2) + "," + str(i) + "," + '0x00ffff,' + '0x00ffff,'
+    data = str(2) + "," + str(i) + "," + '0x00ffff,' + '0x00ffff,'#blue
     print("sending data :", data.encode())
     ser.write(data.encode())
     for i in range(1):
@@ -198,7 +190,7 @@ def set_headrest(i):  # selecting the footrest, degree1, color1, color2
     if i < 90:
         audio_file = './new_audio_files/' + map_intent_to_sound('move_down')
     pygame.mixer.music.load(audio_file)
-    data = str(1) + "," + str(i) + "," + '0x00ffff,' + '0x00ffff,'
+    data = str(1) + "," + str(i) + "," + '0x00ffff,' + '0x00ffff,'#blue
     print("sending data :", data.encode())
     ser.write(data.encode())
     for i in range(1):
@@ -210,9 +202,9 @@ def set_headrest(i):  # selecting the footrest, degree1, color1, color2
 
 
 def turn_off():
-    data = str(0) + "," + str(2) + "," + "0xFFFFFF," + "0xFFFFFF,"
+    data = str(0) + "," + str(2) + "," + "0xFFFFFF," + "0xFFFFFF," #white
 
-    audio_file = './new_audio_files/' + map_intent_to_sound('sleep')
+    audio_file = './new_audio_files/' + map_intent_to_sound('turn_off')
     pygame.mixer.music.load(audio_file)
 
     for i in range(2):
@@ -254,11 +246,21 @@ while True:
         voice_switch = True
         robot_state['status'] = "on_waiting"
         recv_message = ""
-        hello()
         print(voice_switch, robot_state)
 
+    if (voice_switch == False and robot_state['status'] == "on_waiting"):
+        print("Now sleeping....")
+        sleep()
+        content = listen.main()
+        print("Detecting intent for text: ", str(content[-1]))
+        obj_dialogflow = detect.detect_intent_texts([str(content[-1])])
+        detected_intent = obj_dialogflow['intent']
+        if ("Default Welcome Intent" in detected_intent):
+            voice_switch = True
+            pygame.mixer.music.stop()
 
     if (voice_switch == True and robot_state['status'] == "on_waiting"):
+        hello()
         print("Now listening to you speak....")
         content = listen.main()
         print("Detecting intent for text: ", str(content[-1]))
@@ -367,6 +369,6 @@ while True:
                         set_footrest(robot_state['footrest_angle'])
                     print('move the footrest down now')
 
-
+        voice_switch = False
         robot_state['status'] = "on_waiting"
         break
